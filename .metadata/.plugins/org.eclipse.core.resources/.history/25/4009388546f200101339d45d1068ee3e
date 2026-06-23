@@ -1,0 +1,11 @@
+package com.movie;
+
+import java.util.Scanner;
+
+public class UserLogin {
+
+    public static void login() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("User Login Feature Coming Soon!");
+    }
+}

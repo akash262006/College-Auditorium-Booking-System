@@ -1,0 +1,47 @@
+package com.college.auditorium.gui;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class LoginGUI extends JFrame {
+
+    public LoginGUI() {
+
+        setTitle("College Auditorium Booking System");
+        setSize(400, 250);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        setLayout(new GridLayout(4, 1, 10, 10));
+
+        JLabel title = new JLabel("COLLEGE AUDITORIUM BOOKING", JLabel.CENTER);
+        title.setFont(new Font("Arial", Font.BOLD, 16));
+
+        JButton adminBtn = new JButton("Faculty Login");
+        JButton studentBtn = new JButton("Student Login");
+        JButton exitBtn = new JButton("Exit");
+
+        add(title);
+        add(adminBtn);
+        add(studentBtn);
+        add(exitBtn);
+
+        adminBtn.addActionListener(e -> {
+            new AdminLoginGUI();
+            dispose();
+        });
+
+
+        studentBtn.addActionListener(e ->
+            JOptionPane.showMessageDialog(this, "Student Login GUI coming next")
+        );
+
+        exitBtn.addActionListener(e -> System.exit(0));
+
+        setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        new LoginGUI();
+    }
+}

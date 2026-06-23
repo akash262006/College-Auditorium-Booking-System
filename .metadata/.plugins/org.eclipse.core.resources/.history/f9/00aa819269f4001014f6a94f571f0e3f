@@ -1,0 +1,47 @@
+private void saveEventAndSlot() {
+    try {
+        Connection con = DBConnection.getConnection();
+
+        // 1️⃣ Insert Event
+        PreparedStatement psEvent = con.prepareStatement(
+            "INSERT INTO movies (title, genre, duration) VALUES (?, ?, ?)",
+            PreparedStatement.RETURN_GENERATED_KEYS
+        );
+
+        psEvent.setString(1, eventNameField.getText().trim());
+        psEvent.setString(2, departmentField.getText().trim()); // stored in genre
+        psEvent.setInt(3, Integer.parseInt(durationField.getText().trim()));
+
+        psEvent.executeUpdate();
+
+        ResultSet rs = psEvent.getGeneratedKeys();
+        if (!rs.next()) {
+            throw new Exception("Event ID not generated");
+        }
+
+        int eventId = rs.getInt(1);
+
+        // 2️⃣ Insert Slot (FIXED DATETIME)
+        String showTime =
+            dateField.getText().trim() + " " +
+            timeField.getText().trim() + ":00";
+
+        PreparedStatement psSlot = con.prepareStatement(
+            "INSERT INTO showtimes (movie_id, show_time) VALUES (?, ?)"
+        );
+
+        psSlot.setInt(1, eventId);
+        psSlot.setString(2, showTime);
+
+        psSlot.executeUpdate();
+
+        JOptionPane.showMessageDialog(this,
+            "Event and slot added successfully!");
+
+        dispose();
+
+    } catch (Exception e) {
+        e.printStackTrace(); // 🔴 IMPORTANT
+        JOptionPane.showMessageDialog(this, e.getMessage());
+    }
+}

@@ -1,0 +1,46 @@
+package com.college.auditorium.gui;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class StudentDashboardGUI extends JFrame {
+
+    int userId;
+
+    public StudentDashboardGUI(int userId) {
+
+        this.userId = userId;
+
+        setTitle("Student Dashboard");
+        setSize(400, 250);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        setLayout(new GridLayout(3, 1, 15, 15));
+
+        JButton viewEventsBtn = new JButton("View Events");
+        JButton viewMyBookingsBtn = new JButton("View My Bookings");
+        JButton logoutBtn = new JButton("Logout");
+
+        add(viewEventsBtn);
+        add(viewMyBookingsBtn);
+        add(logoutBtn);
+
+        // View Events → Event → Slot → Seat selection
+        viewEventsBtn.addActionListener(e ->
+            new ViewEventsGUI(userId)
+        );
+
+        // View only this student's bookings
+        viewMyBookingsBtn.addActionListener(e ->
+            new ViewMyBookingsGUI(userId)
+        );
+
+        logoutBtn.addActionListener(e -> {
+            new LoginGUI();
+            dispose();
+        });
+
+        setVisible(true);
+    }
+}

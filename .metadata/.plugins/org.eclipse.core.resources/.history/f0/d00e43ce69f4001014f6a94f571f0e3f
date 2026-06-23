@@ -1,0 +1,5 @@
+package com.college.auditorium.gui;
+
+public class AddEventGUI {
+
+}

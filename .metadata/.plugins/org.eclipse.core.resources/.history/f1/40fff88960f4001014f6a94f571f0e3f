@@ -1,0 +1,37 @@
+package com.movie;
+
+import java.util.Scanner;
+
+public class AdminMenu {
+
+    public static void showMenu() {
+
+        Scanner sc = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("=== ADMIN DASHBOARD ===");
+            System.out.println("1. Add Movie");
+            System.out.println("2. View Bookings");
+            System.out.println("3. Logout");
+            System.out.print("Enter choice: ");
+
+            int choice = sc.nextInt();
+
+            switch (choice) {
+                case 1:
+                    AddMovie.add();
+                    break;
+
+                case 2:
+                    ViewBookings.view();
+                    break;
+
+                case 3:
+                    return;
+
+                default:
+                    System.out.println("Invalid choice!");
+            }
+        }
+    }
+}

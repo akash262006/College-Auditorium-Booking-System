@@ -1,0 +1,127 @@
+package com.college.auditorium.gui;
+
+import com.college.auditorium.util.DBConnection;
+
+import javax.swing.*;
+import java.awt.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+public class AddEventGUI extends JFrame {
+
+    JTextField eventNameField;
+    JTextField departmentField;
+    JTextField durationField;
+
+    JTextField dateField;
+    JTextField timeField;
+
+    int eventId = -1;
+
+    public AddEventGUI() {
+
+        setTitle("Add Event & Slots");
+        setSize(450, 350);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        setLayout(new GridLayout(7, 2, 10, 10));
+
+        add(new JLabel("Event Name:"));
+        eventNameField = new JTextField();
+        add(eventNameField);
+
+        add(new JLabel("Department:"));
+        departmentField = new JTextField();
+        add(departmentField);
+
+        add(new JLabel("Duration (minutes):"));
+        durationField = new JTextField();
+        add(durationField);
+
+        add(new JLabel("Slot Date (YYYY-MM-DD):"));
+        dateField = new JTextField();
+        add(dateField);
+
+        add(new JLabel("Slot Time (HH:MM):"));
+        timeField = new JTextField();
+        add(timeField);
+
+        JButton addEventBtn = new JButton("Add Event");
+        JButton addSlotBtn = new JButton("Add Slot");
+        JButton doneBtn = new JButton("Done");
+
+        add(addEventBtn);
+        add(addSlotBtn);
+        add(doneBtn);
+
+        addEventBtn.addActionListener(e -> addEvent());
+        addSlotBtn.addActionListener(e -> addSlot());
+        doneBtn.addActionListener(e -> dispose());
+
+        setVisible(true);
+    }
+
+    private void addEvent() {
+        try {
+            Connection con = DBConnection.getConnection();
+
+            PreparedStatement ps = con.prepareStatement(
+                "INSERT INTO movies (title, genre, duration) VALUES (?, ?, ?)",
+                PreparedStatement.RETURN_GENERATED_KEYS
+            );
+
+            ps.setString(1, eventNameField.getText());
+            ps.setString(2, departmentField.getText());
+            ps.setInt(3, Integer.parseInt(durationField.getText()));
+
+            ps.executeUpdate();
+
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                eventId = rs.getInt(1);
+            }
+
+            JOptionPane.showMessageDialog(this, "Event added successfully!");
+
+            // Lock event fields after creation
+            eventNameField.setEnabled(false);
+            departmentField.setEnabled(false);
+            durationField.setEnabled(false);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Failed to add event");
+        }
+    }
+
+    private void addSlot() {
+        try {
+            if (eventId == -1) {
+                JOptionPane.showMessageDialog(this, "Add event first");
+                return;
+            }
+
+            Connection con = DBConnection.getConnection();
+
+            PreparedStatement ps = con.prepareStatement(
+                "INSERT INTO showtimes (movie_id, show_time) VALUES (?, ?)"
+            );
+
+            ps.setInt(1, eventId);
+            ps.setString(2, dateField.getText() + " " + timeField.getText());
+
+            ps.executeUpdate();
+
+            JOptionPane.showMessageDialog(this, "Slot added!");
+
+            dateField.setText("");
+            timeField.setText("");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Failed to add slot");
+        }
+    }
+}

@@ -1,0 +1,70 @@
+package com.college.auditorium.gui;
+
+import com.college.auditorium.util.DBConnection;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+public class ViewBookingsGUI extends JFrame {
+
+    JTable table;
+    DefaultTableModel model;
+
+    public ViewBookingsGUI() {
+
+        setTitle("View Bookings - Faculty");
+        setSize(700, 400);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        model = new DefaultTableModel();
+        model.addColumn("Student Username");
+        model.addColumn("Event Name");
+        model.addColumn("Slot");
+        model.addColumn("Seats Booked");
+
+        table = new JTable(model);
+        JScrollPane sp = new JScrollPane(table);
+
+        add(sp, BorderLayout.CENTER);
+
+        loadBookings();
+
+        setVisible(true);
+    }
+
+    private void loadBookings() {
+        try {
+            Connection con = DBConnection.getConnection();
+
+            String sql =
+                "SELECT u.username, m.title, s.show_time, b.seats " +
+                "FROM bookings b " +
+                "JOIN users u ON b.user_id = u.user_id " +
+                "JOIN showtimes s ON b.showtime_id = s.showtime_id " +
+                "JOIN movies m ON s.movie_id = m.movie_id";
+
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            model.setRowCount(0);
+
+            while (rs.next()) {
+                model.addRow(new Object[] {
+                    rs.getString("username"),
+                    rs.getString("title"),
+                    rs.getString("show_time"),
+                    rs.getInt("seats")
+                });
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error loading bookings");
+        }
+    }
+}

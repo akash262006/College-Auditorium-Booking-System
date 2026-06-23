@@ -1,0 +1,47 @@
+package com.movie.gui;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class LoginGUI extends JFrame {
+
+    public LoginGUI() {
+
+        setTitle("Online Movie Ticket Booking System");
+        setSize(400, 250);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        setLayout(new GridLayout(4, 1, 10, 10));
+
+        JLabel title = new JLabel("ONLINE MOVIE TICKET BOOKING", JLabel.CENTER);
+        title.setFont(new Font("Arial", Font.BOLD, 16));
+
+        JButton adminBtn = new JButton("Admin Login");
+        JButton userBtn = new JButton("User Login");
+        JButton exitBtn = new JButton("Exit");
+
+        add(title);
+        add(adminBtn);
+        add(userBtn);
+        add(exitBtn);
+
+        adminBtn.addActionListener(e -> {
+            new AdminLoginGUI();
+            dispose();
+        });
+
+        userBtn.addActionListener(e -> {
+            new UserLoginGUI();
+            dispose();
+        });
+
+        exitBtn.addActionListener(e -> System.exit(0));
+
+        setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        new LoginGUI();
+    }
+}

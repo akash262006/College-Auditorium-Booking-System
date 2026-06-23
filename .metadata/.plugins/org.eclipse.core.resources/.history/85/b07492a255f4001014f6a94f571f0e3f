@@ -1,0 +1,131 @@
+package com.college.auditorium.gui;
+
+import com.college.auditorium.util.DBConnection;
+
+import javax.swing.*;
+import java.awt.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.HashSet;
+import java.util.Set;
+
+public class SeatSelectionGUI extends JFrame {
+
+    int userId;
+    int showtimeId = 1; // for demo (you can link from slot selection later)
+
+    Set<JToggleButton> selectedSeats = new HashSet<>();
+
+    public SeatSelectionGUI(int userId) {
+
+        this.userId = userId;
+
+        setTitle("Auditorium Seat Selection");
+        setSize(700, 500);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        setLayout(new BorderLayout(10, 10));
+
+        // ===== SCREEN LABEL =====
+        JLabel screen = new JLabel("ALL EYES THIS WAY PLEASE!", JLabel.CENTER);
+        screen.setOpaque(true);
+        screen.setBackground(Color.LIGHT_GRAY);
+        screen.setFont(new Font("Arial", Font.BOLD, 14));
+        screen.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        add(screen, BorderLayout.NORTH);
+
+        // ===== SEAT PANEL =====
+        JPanel seatPanel = new JPanel(new GridLayout(5, 7, 10, 10));
+        seatPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+
+        char row = 'A';
+        for (int r = 0; r < 5; r++) {
+            seatPanel.add(new JLabel(String.valueOf(row))); // Row label
+
+            for (int c = 1; c <= 6; c++) {
+                String seatNo = row + String.valueOf(c);
+                JToggleButton seat = new JToggleButton(seatNo);
+
+                seat.setBackground(Color.WHITE);
+                seat.setFocusPainted(false);
+
+                seat.addActionListener(e -> {
+                    if (seat.isSelected()) {
+                        seat.setBackground(Color.GREEN);
+                        selectedSeats.add(seat);
+                    } else {
+                        seat.setBackground(Color.WHITE);
+                        selectedSeats.remove(seat);
+                    }
+                });
+
+                seatPanel.add(seat);
+            }
+            row++;
+        }
+
+        add(seatPanel, BorderLayout.CENTER);
+
+        // ===== LEGEND + BUTTON =====
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+
+        JPanel legend = new JPanel(new FlowLayout());
+        legend.add(createLegend(Color.WHITE, "Available"));
+        legend.add(createLegend(Color.GREEN, "Selected"));
+        legend.add(createLegend(Color.GRAY, "Sold"));
+
+        JButton confirmBtn = new JButton("Confirm Booking");
+        confirmBtn.addActionListener(e -> bookSeats());
+
+        bottomPanel.add(legend, BorderLayout.NORTH);
+        bottomPanel.add(confirmBtn, BorderLayout.SOUTH);
+
+        add(bottomPanel, BorderLayout.SOUTH);
+
+        setVisible(true);
+    }
+
+    private JPanel createLegend(Color color, String text) {
+        JPanel p = new JPanel();
+        JLabel box = new JLabel("   ");
+        box.setOpaque(true);
+        box.setBackground(color);
+        box.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        p.add(box);
+        p.add(new JLabel(text));
+        return p;
+    }
+
+    private void bookSeats() {
+        try {
+            if (selectedSeats.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Select at least one seat");
+                return;
+            }
+
+            int seatCount = selectedSeats.size();
+
+            Connection con = DBConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement(
+                "INSERT INTO bookings (user_id, showtime_id, seats) VALUES (?, ?, ?)"
+            );
+
+            ps.setInt(1, userId);
+            ps.setInt(2, showtimeId);
+            ps.setInt(3, seatCount);
+
+            ps.executeUpdate();
+
+            JOptionPane.showMessageDialog(this,
+                "Booking successful!\nSeats booked: " + seatCount);
+
+            dispose();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Booking failed");
+        }
+    }
+}

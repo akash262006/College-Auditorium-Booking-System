@@ -1,0 +1,73 @@
+package com.college.auditorium.gui;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class LoginGUI extends JFrame {
+
+    public LoginGUI() {
+
+        setTitle("College Auditorium Booking System");
+        setSize(420, 300);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        Font titleFont = new Font("Segoe UI", Font.BOLD, 20);
+        Font btnFont = new Font("Segoe UI", Font.BOLD, 15);
+
+        JPanel main = new JPanel(new BorderLayout());
+        main.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        main.setBackground(Color.WHITE);
+
+        JLabel title = new JLabel("College Auditorium Booking System", JLabel.CENTER);
+        title.setFont(titleFont);
+        title.setBorder(BorderFactory.createEmptyBorder(10, 10, 20, 10));
+
+        JPanel btnPanel = new JPanel(new GridLayout(3, 1, 15, 15));
+        btnPanel.setBackground(Color.WHITE);
+
+        JButton adminBtn = new JButton("Faculty Login");
+        JButton studentBtn = new JButton("Student Login");
+        JButton exitBtn = new JButton("Exit");
+
+        styleButton(adminBtn, btnFont, new Color(33, 150, 243));
+        styleButton(studentBtn, btnFont, new Color(76, 175, 80));
+        styleButton(exitBtn, btnFont, new Color(244, 67, 54));
+
+        btnPanel.add(adminBtn);
+        btnPanel.add(studentBtn);
+        btnPanel.add(exitBtn);
+
+        adminBtn.addActionListener(e -> {
+            new AdminLoginGUI();
+            dispose();
+        });
+
+        studentBtn.addActionListener(e -> {
+            new StudentLoginGUI();
+            dispose();
+        });
+
+        exitBtn.addActionListener(e -> System.exit(0));
+
+        main.add(title, BorderLayout.NORTH);
+        main.add(btnPanel, BorderLayout.CENTER);
+
+        add(main);
+        setVisible(true);
+    }
+
+    private void styleButton(JButton btn, Font font, Color bg) {
+        btn.setFont(font);
+        btn.setBackground(bg);
+        btn.setForeground(Color.WHITE);
+        btn.setFocusPainted(false);
+    }
+
+    public static void main(String[] args) {
+        try {
+            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (Exception ignored) {}
+        new LoginGUI();
+    }
+}

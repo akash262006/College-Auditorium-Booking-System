@@ -1,0 +1,72 @@
+package com.college.auditorium.gui;
+
+import com.college.auditorium.util.DBConnection;
+
+import javax.swing.*;
+import java.awt.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+
+public class AddEventGUI extends JFrame {
+
+    JTextField eventNameField;
+    JTextField departmentField;
+    JTextField durationField;
+
+    public AddEventGUI() {
+
+        setTitle("Add Auditorium Event");
+        setSize(400, 300);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        setLayout(new GridLayout(5, 2, 10, 10));
+
+        add(new JLabel("Event Name:"));
+        eventNameField = new JTextField();
+        add(eventNameField);
+
+        add(new JLabel("Department:"));
+        departmentField = new JTextField();
+        add(departmentField);
+
+        add(new JLabel("Duration (minutes):"));
+        durationField = new JTextField();
+        add(durationField);
+
+        JButton addBtn = new JButton("Add Event");
+        JButton backBtn = new JButton("Back");
+
+        add(addBtn);
+        add(backBtn);
+
+        addBtn.addActionListener(e -> addEvent());
+        backBtn.addActionListener(e -> dispose());
+
+        setVisible(true);
+    }
+
+    private void addEvent() {
+        try {
+            Connection con = DBConnection.getConnection();
+
+            String sql = "INSERT INTO movies (title, genre, duration) VALUES (?, ?, ?)";
+            PreparedStatement ps = con.prepareStatement(sql);
+
+            ps.setString(1, eventNameField.getText());
+            ps.setString(2, departmentField.getText());
+            ps.setInt(3, Integer.parseInt(durationField.getText()));
+
+            ps.executeUpdate();
+
+            JOptionPane.showMessageDialog(this, "Event added successfully!");
+            eventNameField.setText("");
+            departmentField.setText("");
+            durationField.setText("");
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error adding event");
+        }
+    }
+}

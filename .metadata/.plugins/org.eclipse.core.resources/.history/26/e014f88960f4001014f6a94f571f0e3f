@@ -1,0 +1,34 @@
+package com.movie;
+
+import com.movie.util.DBConnection;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+public class ViewMovies {
+
+    public static void show() {
+
+        try {
+            Connection con = DBConnection.getConnection();
+            Statement st = con.createStatement();
+
+            ResultSet rs = st.executeQuery("SELECT * FROM movies");
+
+            System.out.println("=== AVAILABLE MOVIES ===");
+            System.out.println("ID | Title | Genre | Duration");
+
+            while (rs.next()) {
+                System.out.println(
+                    rs.getInt("movie_id") + " | " +
+                    rs.getString("title") + " | " +
+                    rs.getString("genre") + " | " +
+                    rs.getInt("duration")
+                );
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}

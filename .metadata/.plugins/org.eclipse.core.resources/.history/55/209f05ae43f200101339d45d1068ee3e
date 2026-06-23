@@ -1,0 +1,12 @@
+package com.movie;
+
+public class AdminMenu {
+	
+	public static void showMenu() {
+        System.out.println("=== ADMIN DASHBOARD ===");
+        System.out.println("1. Add Movie");
+        System.out.println("2. View Bookings");
+        System.out.println("3. Logout");
+    }
+
+}

@@ -1,0 +1,38 @@
+package com.movie;
+
+import com.movie.util.DBConnection;
+import java.sql.*;
+import java.util.Scanner;
+
+public class AdminLogin {
+
+    public static void login() {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Admin Username: ");
+        String user = sc.next();
+
+        System.out.print("Admin Password: ");
+        String pass = sc.next();
+
+        try {
+            Connection con = DBConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement(
+                "SELECT * FROM admin WHERE username=? AND password=?"
+            );
+            ps.setString(1, user);
+            ps.setString(2, pass);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                System.out.println("Admin Login Successful!");
+                AdminMenu.showMenu();
+            } else {
+                System.out.println("Invalid Admin Credentials");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}

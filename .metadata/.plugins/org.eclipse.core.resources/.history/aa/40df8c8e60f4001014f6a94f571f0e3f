@@ -1,0 +1,136 @@
+package com.movie.gui;
+
+import com.movie.util.DBConnection;
+
+import javax.swing.*;
+import java.awt.*;
+import java.sql.*;
+import java.util.HashMap;
+
+public class BookTicketGUI extends JFrame {
+
+    JComboBox<String> movieBox;
+    JComboBox<String> showtimeBox;
+    JTextField seatsField;
+    JLabel statusLabel;
+
+    HashMap<String, Integer> movieMap = new HashMap<>();
+    HashMap<String, Integer> showtimeMap = new HashMap<>();
+
+    int userId;
+
+    public BookTicketGUI(int userId) {
+        this.userId = userId;
+
+        setTitle("Online Movie Ticket Booking");
+        setSize(450, 300);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        setLayout(new GridLayout(6, 2, 10, 10));
+
+        add(new JLabel("Select Movie:"));
+        movieBox = new JComboBox<>();
+        add(movieBox);
+
+        add(new JLabel("Select Showtime:"));
+        showtimeBox = new JComboBox<>();
+        add(showtimeBox);
+
+        add(new JLabel("Seats:"));
+        seatsField = new JTextField("1");
+        add(seatsField);
+
+        JButton bookBtn = new JButton("Book Ticket");
+        add(bookBtn);
+
+        statusLabel = new JLabel("");
+        add(statusLabel);
+
+        loadMovies();
+
+        movieBox.addActionListener(e -> loadShowtimes());
+
+        bookBtn.addActionListener(e -> bookTicket());
+
+        setVisible(true);
+    }
+
+    private void loadMovies() {
+        try {
+            Connection con = DBConnection.getConnection();
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery("SELECT movie_id, title FROM movies");
+
+            movieBox.removeAllItems();
+            movieMap.clear();
+
+            while (rs.next()) {
+                String title = rs.getString("title");
+                int id = rs.getInt("movie_id");
+                movieBox.addItem(title);
+                movieMap.put(title, id);
+            }
+        } catch (Exception e) {
+            statusLabel.setText("Error loading movies");
+        }
+    }
+
+    private void loadShowtimes() {
+        try {
+            Connection con = DBConnection.getConnection();
+            showtimeBox.removeAllItems();
+            showtimeMap.clear();
+
+            String movie = (String) movieBox.getSelectedItem();
+            if (movie == null) return;
+
+            int movieId = movieMap.get(movie);
+
+            PreparedStatement ps = con.prepareStatement(
+                "SELECT showtime_id, show_time FROM showtimes WHERE movie_id=?"
+            );
+            ps.setInt(1, movieId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                String time = rs.getString("show_time");
+                int id = rs.getInt("showtime_id");
+                showtimeBox.addItem(time);
+                showtimeMap.put(time, id);
+            }
+        } catch (Exception e) {
+            statusLabel.setText("No showtimes available");
+        }
+    }
+
+    private void bookTicket() {
+        try {
+            Connection con = DBConnection.getConnection();
+
+            String time = (String) showtimeBox.getSelectedItem();
+            if (time == null) {
+                statusLabel.setText("Select a showtime");
+                return;
+            }
+
+            int showtimeId = showtimeMap.get(time);
+            int seats = Integer.parseInt(seatsField.getText());
+
+            PreparedStatement ps = con.prepareStatement(
+                "INSERT INTO bookings (user_id, showtime_id, seats) VALUES (?, ?, ?)"
+            );
+
+            ps.setInt(1, userId);
+            ps.setInt(2, showtimeId);
+            ps.setInt(3, seats);
+
+            ps.executeUpdate();
+
+            statusLabel.setText("🎉 Ticket booked successfully!");
+
+        } catch (Exception e) {
+            statusLabel.setText("Booking failed");
+        }
+    }
+}

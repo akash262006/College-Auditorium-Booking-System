@@ -1,0 +1,46 @@
+package com.college.auditorium.gui;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class AdminDashboardGUI extends JFrame {
+
+    public AdminDashboardGUI() {
+
+        setTitle("Faculty Dashboard - Auditorium Booking");
+        setSize(400, 300);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        setLayout(new GridLayout(4, 1, 10, 10));
+
+        JButton addEventBtn = new JButton("Add Event");
+        JButton addSlotBtn = new JButton("Add Slot (Date & Time)");
+        JButton viewBookingsBtn = new JButton("View Bookings");
+        JButton logoutBtn = new JButton("Logout");
+
+        add(addEventBtn);
+        add(addSlotBtn);
+        add(viewBookingsBtn);
+        add(logoutBtn);
+
+        addEventBtn.addActionListener(e ->
+            JOptionPane.showMessageDialog(this, "Add Event GUI coming next")
+        );
+
+        addSlotBtn.addActionListener(e ->
+            JOptionPane.showMessageDialog(this, "Add Slot GUI coming next")
+        );
+
+        viewBookingsBtn.addActionListener(e ->
+            JOptionPane.showMessageDialog(this, "View Bookings GUI coming next")
+        );
+
+        logoutBtn.addActionListener(e -> {
+            new LoginGUI();
+            dispose();
+        });
+
+        setVisible(true);
+    }
+}

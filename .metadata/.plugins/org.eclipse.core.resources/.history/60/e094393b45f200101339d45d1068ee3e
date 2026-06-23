@@ -1,0 +1,45 @@
+package com.movie;
+
+import com.movie.util.DBConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.Scanner;
+
+public class AddMovie {
+
+    public static void add() {
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Movie Name: ");
+        String name = sc.nextLine();
+
+        System.out.print("Language: ");
+        String language = sc.nextLine();
+
+        System.out.print("Duration (minutes): ");
+        int duration = sc.nextInt();
+
+        System.out.print("Rating: ");
+        float rating = sc.nextFloat();
+
+        try {
+            Connection con = DBConnection.getConnection();
+
+            String sql = "INSERT INTO movies (movie_name, language, duration, rating) VALUES (?,?,?,?)";
+            PreparedStatement ps = con.prepareStatement(sql);
+
+            ps.setString(1, name);
+            ps.setString(2, language);
+            ps.setInt(3, duration);
+            ps.setFloat(4, rating);
+
+            ps.executeUpdate();
+
+            System.out.println("Movie added successfully!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}

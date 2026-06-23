@@ -1,0 +1,79 @@
+package com.college.auditorium.gui;
+
+import com.college.auditorium.util.DBConnection;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+public class ViewMyBookingsGUI extends JFrame {
+
+    JTable table;
+    DefaultTableModel model;
+    int userId;
+
+    public ViewMyBookingsGUI(int userId) {
+
+        this.userId = userId;
+
+        setTitle("My Bookings");
+        setSize(600, 350);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        model = new DefaultTableModel();
+        model.addColumn("Event");
+        model.addColumn("Slot");
+        model.addColumn("Seats");
+
+        table = new JTable(model);
+        add(new JScrollPane(table), BorderLayout.CENTER);
+
+        loadMyBookings();
+
+        setVisible(true);
+    }
+
+    private void loadMyBookings() {
+        boolean hasData = false;
+
+        try {
+            Connection con = DBConnection.getConnection();
+
+            String sql =
+                "SELECT m.title, s.show_time, b.seats " +
+                "FROM bookings b " +
+                "JOIN showtimes s ON b.showtime_id = s.showtime_id " +
+                "JOIN movies m ON s.movie_id = m.movie_id " +
+                "WHERE b.user_id=?";
+
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, userId);
+
+            ResultSet rs = ps.executeQuery();
+            model.setRowCount(0);
+
+            while (rs.next()) {
+                hasData = true;
+                model.addRow(new Object[] {
+                    rs.getString("title"),
+                    rs.getString("show_time"),
+                    rs.getString("seats")
+                });
+            }
+
+            if (!hasData) {
+                JOptionPane.showMessageDialog(this, "No bookings found");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Unable to load bookings");
+        }
+    }
+
+    }
+}

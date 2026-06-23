@@ -1,0 +1,87 @@
+package com.college.auditorium.gui;
+
+import com.college.auditorium.util.DBConnection;
+import com.college.auditorium.gui.StudentDashboardGUI;
+
+
+import javax.swing.*;
+import java.awt.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+public class StudentLoginGUI extends JFrame {
+
+    JTextField usernameField;
+    JPasswordField passwordField;
+
+    public StudentLoginGUI() {
+
+        setTitle("Student Login");
+        setSize(350, 230);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        setLayout(new GridLayout(5, 2, 10, 10));
+
+        add(new JLabel("Username:"));
+        usernameField = new JTextField();
+        add(usernameField);
+
+        add(new JLabel("Password:"));
+        passwordField = new JPasswordField();
+        add(passwordField);
+
+        JButton loginBtn = new JButton("Login");
+        JButton registerBtn = new JButton("Register");
+        JButton backBtn = new JButton("Back");
+
+        add(loginBtn);
+        add(registerBtn);
+        add(backBtn);
+
+        loginBtn.addActionListener(e -> studentLogin());
+        registerBtn.addActionListener(e -> new StudentRegisterGUI());
+        backBtn.addActionListener(e -> {
+            new LoginGUI();
+            dispose();
+        });
+
+        setVisible(true);
+    }
+
+    private void studentLogin() {
+        try {
+            Connection con = DBConnection.getConnection();
+
+            String sql = "SELECT * FROM users WHERE username=?";
+
+
+            PreparedStatement ps = con.prepareStatement(sql);
+
+            ps.setString(1, usernameField.getText());
+            ps.setString(2, new String(passwordField.getPassword()));
+            ps.setString(3, "STUDENT");
+            
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                int userId = rs.getInt("user_id");
+                JOptionPane.showMessageDialog(this,
+                	    "DB Username: " + rs.getString("username") +
+                	    "\nDB Password: " + rs.getString("password") +
+                	    "\nEntered Password: " + new String(passwordField.getPassword())
+                	);
+
+                new StudentDashboardGUI(userId);
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid credentials");
+            }
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Database error");
+        }
+
+    }
+}

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;Online Movie Ticket Sysyem&apos; to &apos;College Auditorium Booking System&apos;" description="Rename resource &apos;Online Movie Ticket Sysyem&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="/Online Movie Ticket Sysyem" name="College Auditorium Booking System" stamp="1768735760962" updateReferences="true"/>
+</session>

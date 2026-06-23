@@ -1,0 +1,44 @@
+package com.movie;
+
+import com.movie.util.DBConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.Scanner;
+
+public class UserRegister {
+
+    public static void register() {
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter Username: ");
+        String username = sc.next();
+
+        System.out.print("Enter Email: ");
+        String email = sc.next();
+
+        System.out.print("Enter Password: ");
+        String password = sc.next();
+
+        String role = "USER";
+
+        try {
+            Connection con = DBConnection.getConnection();
+
+            String sql = "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)";
+            PreparedStatement ps = con.prepareStatement(sql);
+
+            ps.setString(1, username);
+            ps.setString(2, email);
+            ps.setString(3, password);
+            ps.setString(4, role);
+
+            ps.executeUpdate();
+
+            System.out.println("User registered successfully!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}

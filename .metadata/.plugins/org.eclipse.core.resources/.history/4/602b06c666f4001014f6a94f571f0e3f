@@ -1,0 +1,73 @@
+package com.college.auditorium.gui;
+
+import com.college.auditorium.util.DBConnection;
+
+import javax.swing.*;
+import java.awt.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+public class AdminLoginGUI extends JFrame {
+
+    JTextField usernameField;
+    JPasswordField passwordField;
+
+    public AdminLoginGUI() {
+
+        setTitle("Faculty Login");
+        setSize(350, 220);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        setLayout(new GridLayout(4, 2, 10, 10));
+
+        add(new JLabel("Username:"));
+        usernameField = new JTextField();
+        add(usernameField);
+
+        add(new JLabel("Password:"));
+        passwordField = new JPasswordField();
+        add(passwordField);
+
+        JButton loginBtn = new JButton("Login");
+        JButton backBtn = new JButton("Back");
+
+        add(loginBtn);
+        add(backBtn);
+
+        loginBtn.addActionListener(e -> facultyLogin());
+        backBtn.addActionListener(e -> {
+            new LoginGUI();
+            dispose();
+        });
+
+        setVisible(true);
+    }
+
+    private void facultyLogin() {
+        try {
+            Connection con = DBConnection.getConnection();
+
+            String sql = "SELECT * FROM admin WHERE username=? AND password=?";
+            PreparedStatement ps = con.prepareStatement(sql);
+
+            ps.setString(1, usernameField.getText());
+            ps.setString(2, new String(passwordField.getPassword()));
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                JOptionPane.showMessageDialog(this, "Faculty Login Successful");
+                new AdminDashboardGUI();
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid Credentials");
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Database Error");
+        }
+    }
+}

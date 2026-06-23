@@ -1,0 +1,38 @@
+package com.movie;
+
+import com.movie.util.DBConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.Scanner;
+
+public class BookTicket {
+
+    public static void book(int userId) {
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter Showtime ID: ");
+        int showtimeId = sc.nextInt();
+
+        System.out.print("Number of Seats: ");
+        int seats = sc.nextInt();
+
+        try {
+            Connection con = DBConnection.getConnection();
+
+            String sql = "INSERT INTO bookings (user_id, showtime_id, seats) VALUES (?, ?, ?)";
+            PreparedStatement ps = con.prepareStatement(sql);
+
+            ps.setInt(1, userId);
+            ps.setInt(2, showtimeId);
+            ps.setInt(3, seats);
+
+            ps.executeUpdate();
+
+            System.out.println("🎉 Ticket booked successfully!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}

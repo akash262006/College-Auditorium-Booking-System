@@ -1,0 +1,8 @@
+package com.movie;
+
+public class ViewBookings {
+
+    public static void view() {
+        System.out.println("View Bookings feature coming soon!");
+    }
+}

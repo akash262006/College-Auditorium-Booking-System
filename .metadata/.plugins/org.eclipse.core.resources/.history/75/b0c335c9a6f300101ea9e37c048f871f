@@ -1,0 +1,36 @@
+package com.movie.gui;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class AdminDashboardGUI extends JFrame {
+
+    public AdminDashboardGUI() {
+
+        setTitle("Admin Dashboard");
+        setSize(400, 250);
+        setLocationRelativeTo(null);
+        setLayout(new GridLayout(4, 1, 10, 10));
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        JButton addMovie = new JButton("Add Movie");
+        JButton addShowtime = new JButton("Add Showtime");
+        JButton viewBookings = new JButton("View Bookings");
+        JButton logout = new JButton("Logout");
+
+        add(addMovie);
+        add(addShowtime);
+        add(viewBookings);
+        add(logout);
+
+        addMovie.addActionListener(e -> new AddMovieGUI());
+        addShowtime.addActionListener(e -> new AddShowtimeGUI());
+        viewBookings.addActionListener(e -> new ViewBookingsGUI());
+        logout.addActionListener(e -> {
+            new LoginGUI();
+            dispose();
+        });
+
+        setVisible(true);
+    }
+}
